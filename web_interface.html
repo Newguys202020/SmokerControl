@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#bloc1, #setpoint
+{
+    display:inline;
+}
+.bold {
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+<h1>Smoker Control</h1>
+<div id="temperature">
+	Temperature: <input id="temperatureSet" type="number" value="" />
+</div>
+<button type = "button" onclick="changeTemp()"  name = "Change Temp">Change Temp</button>
+<div id="block_container">
+	<div id="bloc1"><strong>Current setpoint: </strong></div>
+	<div id="setpoint">0</div>
+</div>
+<p>&nbsp</p>
+<input type = "button" onclick="controlPID()"  value = "Enable" id="startStop"></input>
+<p id="CurrentState"><strong>Stopped</strong></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>Tweaking</h2>
+<p>Proportional Value (Saves after shutdown, only works when Disabled) :&nbsp; <input id="pSet" type="number" value="" /></p>
+<button type = "button" onclick="changeP()"  name = "Change Proportional">Change P</button>
+<p>Integral Value (Saves after shutdown, only works when Disabled) :&nbsp; <input id="iSet" type="number" value="" /></p>
+<button type = "button" onclick="changeI()"  name = "Change Integral">Change I</button>
+
+<script>
+var temperature = document.getElementById("temperatureSet");
+var proportional = document.getElementById("pSet");
+var integral = document.getElementById("iSet");
+document.getElementById('setpoint').innerHTML=tLast;
+document.getElementById('pSet').value=pLast
+document.getElementById('iSet').value=iLast
+
+function changeTemp() {
+  temperature.innerHTML = temperature.value;
+  let xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    }
+  };
+  xhttp.open('GET', '/set_temp?temp=' + temperature.value, true);
+  xhttp.send();
+  document.getElementbyId("setpoint").innerHTML = temperature.value;
+}
+
+function controlPID() {
+    var pid = document.getElementById("startStop");
+    if (pid.value=="Enable") {
+	pid.value = "Disable";
+	document.getElementById("CurrentState").innerHTML = "Running";
+	document.getElementById("CurrentState").classList.add('bold');
+	var newState = 1;
+	let xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+    		if (this.readyState == 4 && this.status == 200) {
+    			}
+  	};
+  	xhttp.open('GET', 'enable_pid?command=' + newState, true);
+  	xhttp.send();
+  	}
+	else {
+	pid.value = "Enable";
+	document.getElementById("CurrentState").innerHTML = "Stopped";
+	document.getElementById("CurrentState").classList.add('bold');
+	var newState = 0;
+	var xhttp = new XMLHttpRequest();
+ 	xhttp.onreadystatechange = function() {
+    		if (this.readyState == 4 && this.status == 200) {
+    		}
+  	};
+  	xhttp.open('GET', '/enable_pid?command=' + newState, true);
+  	xhttp.send();
+  }
+}
+
+function changeP() {
+  proportional.innerHTML = proportional.value;
+  let xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    }
+  };
+  xhttp.open('GET', '/set_p?p=' + proportional.value, true);
+  xhttp.send();
+}
+
+function changeI() {
+  integral.innerHTML = integral.value;
+  let xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    }
+  };
+  xhttp.open('GET', '/set_i?i=' + integral.value, true);
+  xhttp.send();
+}
+
+</script>
+
+</body>
+</html>
